@@ -1,9 +1,12 @@
-const fs = require("node:fs/promises");
+import fs from "node:fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const path = require("path");
-const contactsPath = path.join(__dirname, "db/contacts.json");
+const contactsPath = path.join(__dirname, "../db/contacts.json");
 
-console.log(__dirname);
+// console.log(__dirname);
 
 async function listContacts() {
   try {
@@ -14,7 +17,7 @@ async function listContacts() {
     throw error;
   }
 }
-
+console.log(listContacts());
 async function getContactById(contactId) {
   try {
     const contacts = await listContacts();
@@ -67,4 +70,4 @@ async function addContact(name, email, phone) {
   }
 }
 
-module.exports = { listContacts, getContactById, removeContact, addContact };
+export { listContacts, getContactById, removeContact, addContact };
