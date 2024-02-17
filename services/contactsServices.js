@@ -17,7 +17,7 @@ async function listContacts() {
     throw error;
   }
 }
-console.log(listContacts());
+
 async function getContactById(contactId) {
   try {
     const contacts = await listContacts();
