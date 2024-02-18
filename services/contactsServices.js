@@ -83,7 +83,6 @@ async function addContact(name, email, phone) {
 
 async function updContact(contactId, body) {
   try {
-    // const contacts = await listContacts();
     const data = await fs.readFile(contactsPath, { encoding: "utf-8" });
     const contacts = JSON.parse(data);
     const index = contacts.findIndex((contact) => contact.id === contactId);

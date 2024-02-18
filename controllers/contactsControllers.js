@@ -80,34 +80,6 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-// export const createContact = async (req, res, next) => {
-//   try {
-//     contact = {
-//       name: req.body.name,
-//       email: req.body.email,
-//       phone: req.body.phone,
-//     };
-
-//     const result = createContactSchema.validate(contact);
-//     console.log(result);
-//     if (result) {
-//       throw HttpError(400, error.message);
-//     }
-
-//     const newContact = await addContact(
-//       contact.name,
-//       contact.email,
-//       contact.phone
-//     );
-//     if (!newContact) {
-//       throw HttpError(404, "Not found");
-//     }
-//     res.status(201).json(newContact);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 export const updateContact = async (req, res, next) => {
   try {
     const { error } = updateContactSchema.validate(req.body);
