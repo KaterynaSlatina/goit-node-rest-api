@@ -70,4 +70,21 @@ async function addContact(name, email, phone) {
   }
 }
 
-export { listContacts, getContactById, removeContact, addContact };
+async function updContact(contactId, data) {
+  try {
+    const contacts = await listContacts();
+    const index = contacts.findIndex((contact) => contact.id === contactId);
+    if (index === -1) {
+      return null;
+    }
+    contacts[index] = { id, ...data };
+
+    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    return contacts[index];
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
+export { listContacts, getContactById, removeContact, addContact, updContact };
