@@ -1,4 +1,5 @@
-import { HttpError } from "../helpers/HttpError.js";
+import HttpError from "../helpers/HttpError.js";
+import validateBody from "../helpers/validateBody.js";
 import {
   listContacts,
   getContactById,
@@ -49,31 +50,63 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    contact = {
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-    };
+    validateBody(createContactSchema)(req, res, async () => {
+      const contact = {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+      };
 
-    const result = createContactSchema.validate(contact);
-    console.log(result);
-    if (result) {
-      throw HttpError(400, error.message);
-    }
+      if ((!contact.name, !contact.email, !contact.phone)) {
+        return res
+          .status(400)
+          .json({ message: "All fields (name, email, phone) are required" });
+      }
 
-    const newContact = await addContact(
-      contact.name,
-      contact.email,
-      contact.phone
-    );
-    if (!newContact) {
-      throw HttpError(404, "Not found");
-    }
-    res.status(201).json(newContact);
+      const newContact = await addContact(
+        contact.name,
+        contact.email,
+        contact.phone
+      );
+
+      if (!newContact) {
+        throw HttpError(409, "Contact already exists");
+      }
+
+      res.status(201).json(newContact);
+    });
   } catch (error) {
     next(error);
   }
 };
+
+// export const createContact = async (req, res, next) => {
+//   try {
+//     contact = {
+//       name: req.body.name,
+//       email: req.body.email,
+//       phone: req.body.phone,
+//     };
+
+//     const result = createContactSchema.validate(contact);
+//     console.log(result);
+//     if (result) {
+//       throw HttpError(400, error.message);
+//     }
+
+//     const newContact = await addContact(
+//       contact.name,
+//       contact.email,
+//       contact.phone
+//     );
+//     if (!newContact) {
+//       throw HttpError(404, "Not found");
+//     }
+//     res.status(201).json(newContact);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 export const updateContact = async (req, res, next) => {
   try {
