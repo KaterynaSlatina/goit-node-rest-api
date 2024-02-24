@@ -74,6 +74,16 @@ export const updateContact = async (req, res, next) => {
       phone: req.body.phone,
     };
 
+    const nonEmptyFields = Object.entries(updatedContact).filter(
+      ([_, value]) => value !== null && value !== undefined
+    );
+
+    if (nonEmptyFields.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Body must have at least one field" });
+    }
+
     const result = await Contact.findByIdAndUpdate(id, updatedContact, {
       new: true,
     });
@@ -90,10 +100,14 @@ export const updateFavoriteContact = async (req, res, next) => {
   try {
     const favorite = req.body.favorite;
     const { id } = req.params;
-    const updatedContact = await Contact.findByIdAndUpdate(id, favorite, {
-      new: true,
-    });
-    console.log(updatedContact);
+
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      { favorite },
+      {
+        new: true,
+      }
+    );
     if (!updatedContact) {
       throw HttpError(404, "Not found");
     }
