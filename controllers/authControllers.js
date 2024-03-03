@@ -18,15 +18,18 @@ export const register = async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const newUser = User.create({
+    const newUser = await User.create({
       name,
       email: normalizedEmail,
       password: passwordHash,
     });
-    if (newUser) {
-      const { email, subscription } = req.body;
-      res.status(201).json({ user: { email, subscription } });
-    }
+
+    res.status(201).json({
+      user: {
+        email,
+        subscription: newUser.subscription,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -74,8 +77,14 @@ export const logout = async (req, res, next) => {
 };
 
 export const getCurrent = async (req, res) => {
-  const { email, subscription } = req.body;
-  res.status(200).json({ email, subscription });
+  const { email, subscription } = req.user;
+
+  res.status(200).json({
+    user: {
+      email,
+      subscription,
+    },
+  });
 };
 
 export default { register };

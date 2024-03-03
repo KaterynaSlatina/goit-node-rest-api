@@ -32,9 +32,11 @@ const auth = async (req, res, next) => {
     // if (user.token !== token) {
     //   return res.status(401).send({ message: "Not authorized" });
     // }
-    req.user = {
-      id: decode.id,
-    };
+    // req.user = {
+    //   id: decode.id,
+    // };
+
+    req.user = user;
 
     next();
   });
