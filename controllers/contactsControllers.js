@@ -10,7 +10,16 @@ import Contact from "../models/contact.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await Contact.find({ owner: req.user.id });
+    const { page = 1, limit = 2, favorite } = req.query;
+    const skip = (page - 1) * limit;
+
+    if (favorite !== undefined) {
+      req.query.favorite = favorite.toLowerCase() === "true";
+    }
+
+    const contacts = await Contact.find({ owner: req.user.id })
+      .skip(skip)
+      .limit(limit);
     res.status(200).json(contacts);
   } catch (error) {
     next(error);
@@ -92,12 +101,12 @@ export const updateContact = async (req, res, next) => {
         .json({ message: "Body must have at least one field" });
     }
 
-    const contact = await Contact.findById(id);
-    if (contact.owner.toString() !== req.user.id) {
+    const result = await Contact.findByIdAndUpdate(id, updatedContact, {
+      new: true,
+    });
+    if (result.owner.toString() !== req.user.id) {
       throw HttpError(404, "Contact not found");
     }
-
-    const result = await Contact.updateOne(contact, updatedContact);
 
     if (!result) {
       throw HttpError(404, "Not found");
@@ -118,7 +127,17 @@ export const updateFavoriteContact = async (req, res, next) => {
       throw HttpError(404, "Contact not found");
     }
 
-    const updatedContact = await Contact.updateOne(contact, { favorite });
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      { favorite },
+      {
+        new: true,
+      }
+    );
+
+    if (updatedContact.owner.toString() !== req.user.id) {
+      throw HttpError(404, "Contact not found");
+    }
 
     if (!updatedContact) {
       throw HttpError(404, "Not found");
