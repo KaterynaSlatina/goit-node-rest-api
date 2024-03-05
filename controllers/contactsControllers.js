@@ -11,15 +11,16 @@ import Contact from "../models/contact.js";
 export const getAllContacts = async (req, res, next) => {
   try {
     const { page = 1, limit = 2, favorite } = req.query;
+
     const skip = (page - 1) * limit;
 
+    const query = { owner: req.user.id };
+
     if (favorite !== undefined) {
-      req.query.favorite = favorite.toLowerCase() === "true";
+      query.favorite = favorite.toLowerCase() === "true";
     }
 
-    const contacts = await Contact.find({ owner: req.user.id })
-      .skip(skip)
-      .limit(limit);
+    const contacts = await Contact.find(query).skip(skip).limit(limit);
     res.status(200).json(contacts);
   } catch (error) {
     next(error);
