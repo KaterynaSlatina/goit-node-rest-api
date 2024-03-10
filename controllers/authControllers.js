@@ -2,8 +2,8 @@ import User from "../models/user.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-import { registerSchema } from "../schemas/userSchemas.js";
+import gravatar from "gravatar";
+import Jimp from "jimp";
 
 export const register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -18,10 +18,23 @@ export const register = async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    const avatarURL = gravatar.url(normalizedEmail);
+
+    Jimp.read({
+      url: avatarURL,
+    })
+      .then((image) => {
+        image.resize(250, 250);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
     const newUser = await User.create({
       name,
       email: normalizedEmail,
       password: passwordHash,
+      avatarURL,
     });
 
     res.status(201).json({
