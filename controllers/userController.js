@@ -39,7 +39,7 @@ export const getAvatar = async (req, res, next) => {
     if (user.avatar === null) {
       return res.status(401).send({ message: "No avatar" });
     }
-    res.sendFile(path.join(process.cwd(), "public/avatars", user.avatar));
+    res.sendFile(path.join(process.cwd(), "public/avatars", user.avatarURL));
   } catch (error) {
     next(error);
   }
