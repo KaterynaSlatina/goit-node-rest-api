@@ -2,9 +2,11 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import User from "../models/user.js";
 const avatarsDir = path.join("public", "avatars");
+import Jimp from "jimp";
 
 export const uploadAvatar = async (req, res, next) => {
   // console.log(req.file);
+
   try {
     const { _id } = req.user;
     const { path: tempUpload, originalname } = req.file;
@@ -13,6 +15,9 @@ export const uploadAvatar = async (req, res, next) => {
 
     await fs.rename(tempUpload, resultUpload);
 
+    const image = await Jimp.read(resultUpload);
+    await image.resize(250, 250).write(resultUpload);
+
     const avatarURL = path.join("avatars", newFileName);
 
     await User.findByIdAndUpdate(_id, { avatarURL });
@@ -20,23 +25,6 @@ export const uploadAvatar = async (req, res, next) => {
     res.json({
       avatarURL,
     });
-    // await fs.rename(
-    //   req.file.path,
-    //   path.join(process.cwd(), "public/avatars", req.file.filename)
-    // );
-    // const user = await User.findByIdAndUpdate(
-    //   req.user.id,
-    //   { avatar: req.file.filename },
-    //   { new: true }
-    // );
-    // if (user === null) {
-    //   return res.status(401).send({ message: "Not authorized" });
-    // }
-    // res.send({
-    //   user: {
-    //     avatarUrl: user.avatarURL,
-    //   },
-    // });
   } catch (error) {
     next(error);
   }

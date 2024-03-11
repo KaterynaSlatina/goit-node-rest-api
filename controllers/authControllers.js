@@ -3,7 +3,6 @@ import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
-import Jimp from "jimp";
 
 export const register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -20,16 +19,6 @@ export const register = async (req, res, next) => {
 
     const avatarURL = gravatar.url(normalizedEmail);
 
-    Jimp.read({
-      url: avatarURL,
-    })
-      .then((image) => {
-        image.resize(250, 250);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-
     const newUser = await User.create({
       name,
       email: normalizedEmail,
@@ -41,6 +30,7 @@ export const register = async (req, res, next) => {
       user: {
         email,
         subscription: newUser.subscription,
+        avatarURL,
       },
     });
   } catch (error) {
