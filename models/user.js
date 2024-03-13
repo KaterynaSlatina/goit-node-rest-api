@@ -20,9 +20,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    avatarURL: {
+      type: String,
+    },
   },
   { versionKey: false }
 );
 
-// export default mongoose.model("User", userSchema);
-export default mongoose.model("user", userSchema);
+export default mongoose.model("User", userSchema);
+// export default mongoose.model("user", userSchema);
