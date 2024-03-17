@@ -22,9 +22,7 @@ export const uploadAvatar = async (req, res, next) => {
 
     await User.findByIdAndUpdate(_id, { avatarURL });
 
-    res.json({
-      avatarURL,
-    });
+    res.json({ avatarURL });
   } catch (error) {
     next(error);
   }
